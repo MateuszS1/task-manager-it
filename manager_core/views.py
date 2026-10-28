@@ -9,9 +9,14 @@ from manager_core.models import TaskType, Position, Worker, Task
 
 
 def index(request: HttpRequest) -> HttpResponse:
+    context = {
+        "num_workers": Worker.objects.count(),
+        "num_completed_tasks": Task.objects.filter(is_completed=False).count(),
+    }
     return render(
         request,
         "manager/index.html",
+        context=context
     )
 
 #   List Views
@@ -35,14 +40,14 @@ class TaskListView(LoginRequiredMixin, ListView):
     paginate_by = 5
 
 #   Detail Views
-class TaskDetailView(LoginRequiredMixin, DetailView):
-    model = Task
-    queryset = Task.objects.all().prefetch_related("task_type__name")
-
-
 class WorkerDetailView(LoginRequiredMixin, DetailView):
     model = Worker
     queryset = Worker.objects.all().prefetch_related("position__name")
+
+
+class TaskDetailView(LoginRequiredMixin, DetailView):
+    model = Task
+    queryset = Task.objects.all().prefetch_related("task_type__name")
 
 #   Create Views
 class TaskTypeCreateView(LoginRequiredMixin, CreateView):
