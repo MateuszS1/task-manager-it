@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "manager_core",
+    "manager",
     "crispy_forms",
     "crispy_bootstrap5",
 ]
@@ -104,7 +104,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = "manager_core.Worker"
+AUTH_USER_MODEL = "manager.Worker"
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.1/topics/i18n/

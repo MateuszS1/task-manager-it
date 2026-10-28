@@ -4,8 +4,8 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
-from manager_core.forms import WorkerCreationForm, TaskCreationForm
-from manager_core.models import TaskType, Position, Worker, Task
+from manager.forms import WorkerCreationForm, TaskCreationForm
+from manager.models import TaskType, Position, Worker, Task
 
 
 def index(request: HttpRequest) -> HttpResponse:
