@@ -5,7 +5,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
 from manager.forms import WorkerCreationForm, TaskCreationForm, WorkerSearchForm, TaskSearchForm, PositionSearchForm, \
-    TaskTypeSearchForm, TaskStatusUpdateForm, TaskAssigneeUpdateForm
+    TaskTypeSearchForm, TaskStatusUpdateForm, TaskAssigneeUpdateForm, WorkerUpdateForm, UserUpdateForm
 from manager.models import TaskType, Position, Worker, Task
 
 
@@ -73,11 +73,11 @@ class WorkerListView(LoginRequiredMixin, ListView):
     paginate_by = 5
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super(WorkerListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
-        name = self.request.GET.get("name", "")
+        username = self.request.GET.get("username", "")
         context["search_form"] = WorkerSearchForm(
-            initial={"name": name}
+            initial={"username": username}
         )
 
         paginator = context["page_obj"].paginator
@@ -88,7 +88,21 @@ class WorkerListView(LoginRequiredMixin, ListView):
 
         context["page_range"] = range(start, end + 1)
 
+        context["breadcrumbs"] = [
+            {
+                "title": "Workers",
+                "active": True,
+            },
+        ]
+
         return context
+
+    def get_queryset(self):
+        queryset = Worker.objects.select_related("position")
+        form = WorkerSearchForm(self.request.GET)
+        if form.is_valid():
+            return queryset.filter(username__icontains=form.cleaned_data["username"])
+        return queryset
 
 class TaskListView(LoginRequiredMixin, ListView):
     model = Task
@@ -130,6 +144,22 @@ class TaskListView(LoginRequiredMixin, ListView):
 class WorkerDetailView(LoginRequiredMixin, DetailView):
     model = Worker
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumbs"] = [
+            {
+                "title": "Workers",
+                "url": reverse("manager:worker-list"),
+            },
+            {
+                "title": "Details",
+                "active": True,
+            },
+        ]
+
+        return context
+
 
 class TaskDetailView(LoginRequiredMixin, DetailView):
     model = Task
@@ -168,6 +198,21 @@ class WorkerCreateView(LoginRequiredMixin, CreateView):
     form_class = WorkerCreationForm
     success_url = reverse_lazy("manager:worker-list")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumbs"] = [
+            {
+                "title": "Worker",
+                "url": reverse("manager:worker-list"),
+            },
+            {
+                "title": "Create",
+                "active": True,
+            },
+        ]
+
+        return context
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
     model = Task
@@ -205,9 +250,35 @@ class PositionUpdateView(LoginRequiredMixin, UpdateView):
 
 class WorkerUpdateView(LoginRequiredMixin, UpdateView):
     model = Worker
-    form_class = WorkerCreationForm
+    form_class = WorkerUpdateForm
     success_url = reverse_lazy("manager:worker-list")
 
+    def get_form_class(self):
+        if self.object == self.request.user:
+            return UserUpdateForm
+
+        return WorkerUpdateForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumbs"] = [
+            {
+                "title": "Workers",
+                "url": reverse("manager:worker-list"),
+            },
+            {
+                "title": "Details",
+                "url": reverse("manager:worker-detail", kwargs={"pk": self.kwargs.get("pk")}),
+            },
+            {
+                "title": "Update",
+                "active": True,
+            },
+        ]
+
+
+        return context
 
 class TaskStatusUpdateView(LoginRequiredMixin, UpdateView):
     model = Task
