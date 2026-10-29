@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
 from manager.forms import WorkerCreationForm, TaskCreationForm, WorkerSearchForm, TaskSearchForm, PositionSearchForm, \
@@ -95,7 +95,7 @@ class TaskListView(LoginRequiredMixin, ListView):
     paginate_by = 5
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super(TaskListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         name = self.request.GET.get("name", "")
         context["search_form"] = TaskSearchForm(
@@ -109,6 +109,13 @@ class TaskListView(LoginRequiredMixin, ListView):
         start = max(end - 4, 1)
 
         context["page_range"] = range(start, end + 1)
+
+        context["breadcrumbs"] = [
+            {
+                "title": "Tasks",
+                "active": True,
+            },
+        ]
 
         return context
 
@@ -126,6 +133,22 @@ class WorkerDetailView(LoginRequiredMixin, DetailView):
 
 class TaskDetailView(LoginRequiredMixin, DetailView):
     model = Task
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumbs"] = [
+            {
+                "title": "Tasks",
+                "url": reverse("manager:task-list"),
+            },
+            {
+                "title": "Details",
+                "active": True,
+            },
+        ]
+
+        return context
 
 #   Create Views
 class TaskTypeCreateView(LoginRequiredMixin, CreateView):
@@ -151,6 +174,22 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
     form_class = TaskCreationForm
     success_url = reverse_lazy("manager:task-list")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumbs"] = [
+            {
+                "title": "Tasks",
+                "url": reverse("manager:task-list"),
+            },
+            {
+                "title": "Create",
+                "active": True,
+            },
+        ]
+
+        return context
+
 #   Update Views
 class TaskTypeUpdateView(LoginRequiredMixin, UpdateView):
     model = TaskType
@@ -174,9 +213,49 @@ class TaskStatusUpdateView(LoginRequiredMixin, UpdateView):
     model = Task
     form_class = TaskStatusUpdateForm
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumbs"] = [
+            {
+                "title": "Tasks",
+                "url": reverse("manager:task-list"),
+            },
+            {
+                "title": "Details",
+                "url": reverse("manager:task-detail", kwargs={"pk": self.kwargs.get("pk")}),
+            },
+            {
+                "title": "Update",
+                "active": True,
+            },
+        ]
+
+        return context
+
 class TaskAssigneeUpdateView(LoginRequiredMixin, UpdateView):
     model = Task
     form_class = TaskAssigneeUpdateForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumbs"] = [
+            {
+                "title": "Tasks",
+                "url": reverse("manager:task-list"),
+            },
+            {
+                "title": "Details",
+                "url": reverse("manager:task-detail", kwargs={"pk": self.kwargs.get("pk")}),
+            },
+            {
+                "title": "Update",
+                "active": True,
+            },
+        ]
+
+        return context
 
 #   Delete Views
 class TaskTypeDeleteView(LoginRequiredMixin, DeleteView):
