@@ -4,7 +4,8 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
-from manager.forms import WorkerCreationForm, TaskCreationForm
+from manager.forms import WorkerCreationForm, TaskCreationForm, WorkerSearchForm, TaskSearchForm, PositionSearchForm, \
+    TaskTypeSearchForm
 from manager.models import TaskType, Position, Worker, Task
 
 
@@ -22,32 +23,102 @@ def index(request: HttpRequest) -> HttpResponse:
 #   List Views
 class TaskTypeListView(LoginRequiredMixin, ListView):
     model = TaskType
+    template_name = "manager/task_type_list.html"
     context_object_name = "task_type_list"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(TaskTypeListView, self).get_context_data(**kwargs)
+
+        name = self.request.GET.get("name", "")
+        context["search_form"] = TaskTypeSearchForm(
+            initial={"name": name}
+        )
+
+        paginator = context["page_obj"].paginator
+
+        start = max(context["page_obj"].number - 2, 1)
+        end = min(start + 4, paginator.num_pages)
+        start = max(end - 4, 1)
+
+        context["page_range"] = range(start, end + 1)
+
+        return context
 
 
 class PositionListView(LoginRequiredMixin, ListView):
     model = Position
+    template_name = "manager/position_list.html"
     context_object_name = "position_list"
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(PositionListView, self).get_context_data(**kwargs)
+
+        name = self.request.GET.get("name", "")
+        context["search_form"] = PositionSearchForm(
+            initial={"name": name}
+        )
+
+        paginator = context["page_obj"].paginator
+
+        start = max(context["page_obj"].number - 2, 1)
+        end = min(start + 4, paginator.num_pages)
+        start = max(end - 4, 1)
+
+        context["page_range"] = range(start, end + 1)
+
+        return context
 
 class WorkerListView(LoginRequiredMixin, ListView):
     model = Worker
     paginate_by = 5
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(WorkerListView, self).get_context_data(**kwargs)
+
+        name = self.request.GET.get("name", "")
+        context["search_form"] = WorkerSearchForm(
+            initial={"name": name}
+        )
+
+        paginator = context["page_obj"].paginator
+
+        start = max(context["page_obj"].number - 2, 1)
+        end = min(start + 4, paginator.num_pages)
+        start = max(end - 4, 1)
+
+        context["page_range"] = range(start, end + 1)
+
+        return context
 
 class TaskListView(LoginRequiredMixin, ListView):
     model = Task
     paginate_by = 5
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(TaskListView, self).get_context_data(**kwargs)
+
+        name = self.request.GET.get("name", "")
+        context["search_form"] = TaskSearchForm(
+            initial={"name": name}
+        )
+
+        paginator = context["page_obj"].paginator
+
+        start = max(context["page_obj"].number - 2, 1)
+        end = min(start + 4, paginator.num_pages)
+        start = max(end - 4, 1)
+
+        context["page_range"] = range(start, end + 1)
+
+        return context
+
 #   Detail Views
 class WorkerDetailView(LoginRequiredMixin, DetailView):
     model = Worker
-    queryset = Worker.objects.all().prefetch_related("position__name")
 
 
 class TaskDetailView(LoginRequiredMixin, DetailView):
     model = Task
-    queryset = Task.objects.all().prefetch_related("task_type__name")
 
 #   Create Views
 class TaskTypeCreateView(LoginRequiredMixin, CreateView):
@@ -95,7 +166,6 @@ class WorkerUpdateView(LoginRequiredMixin, UpdateView):
 class TaskUpdateView(LoginRequiredMixin, UpdateView):
     model = Task
     form_class = TaskCreationForm
-    success_url = reverse_lazy("manager:task-list")
 
 #   Delete Views
 class TaskTypeDeleteView(LoginRequiredMixin, DeleteView):
