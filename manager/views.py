@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
 from manager.forms import WorkerCreationForm, TaskCreationForm, WorkerSearchForm, TaskSearchForm, PositionSearchForm, \
-    TaskTypeSearchForm
+    TaskTypeSearchForm, TaskStatusUpdateForm, TaskAssigneeUpdateForm
 from manager.models import TaskType, Position, Worker, Task
 
 
@@ -170,9 +170,13 @@ class WorkerUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("manager:worker-list")
 
 
-class TaskUpdateView(LoginRequiredMixin, UpdateView):
+class TaskStatusUpdateView(LoginRequiredMixin, UpdateView):
     model = Task
-    form_class = TaskCreationForm
+    form_class = TaskStatusUpdateForm
+
+class TaskAssigneeUpdateView(LoginRequiredMixin, UpdateView):
+    model = Task
+    form_class = TaskAssigneeUpdateForm
 
 #   Delete Views
 class TaskTypeDeleteView(LoginRequiredMixin, DeleteView):
