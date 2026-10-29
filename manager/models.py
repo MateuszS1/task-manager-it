@@ -32,7 +32,7 @@ class Worker(AbstractUser):
         return f"{self.first_name} {self.last_name}"
 
     def get_absolute_url(self):
-        return reverse("manager:task-detail", args=[str(self.id)])
+        return reverse("manager:worker-detail", args=[str(self.id)])
 
 
 class Task(models.Model):
