@@ -82,7 +82,7 @@ urlpatterns = [
          name="worker-create"
          ),
     path(
-        "drivers/<int:pk>/update/",
+        "workers/<int:pk>/update/",
         WorkerUpdateView.as_view(),
         name="worker-update",
     ),
