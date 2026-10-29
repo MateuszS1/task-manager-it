@@ -274,5 +274,5 @@ class WorkerDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class TaskDeleteView(LoginRequiredMixin, DeleteView):
-    model = TaskType
+    model = Task
     success_url = reverse_lazy("manager:task-list")
