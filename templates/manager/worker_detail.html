@@ -84,7 +84,7 @@
             </div>
             <div class="card-body">
               <ul class="list-group list-group-flush list my--3">
-                {% for task in worker.tasks.all %}
+                {% for task in page_obj %}
                   <li class="list-group-item px-0">
                     <div class="row align-items-center">
                       <div class="col-auto ms--2">
@@ -131,8 +131,10 @@
           </div>
         </div>
       </div>
-
-
     </div>
   </div>
+{% endblock %}
+
+{% block pagination %}
+  {% include "includes/pagination.html" with pagination_alignment="end" %}
 {% endblock %}

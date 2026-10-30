@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.db.models import Count
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
@@ -97,6 +98,7 @@ class PositionListView(LoginRequiredMixin, ListView):
             return self.queryset.filter(name__icontains=form.cleaned_data["name"])
         return self.queryset
 
+
 class WorkerListView(LoginRequiredMixin, ListView):
     model = Worker
     paginate_by = 5
@@ -172,9 +174,24 @@ class TaskListView(LoginRequiredMixin, ListView):
 #   Detail Views
 class WorkerDetailView(LoginRequiredMixin, DetailView):
     model = Worker
+    paginate_by = 4
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        paginator = Paginator(self.object.tasks.all(), self.paginate_by)
+        page_number = self.request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+
+        context["page_obj"] = page_obj
+        context["paginator"] = paginator
+        context["is_paginated"] = page_obj.has_other_pages()
+
+        start = max(context["page_obj"].number - 2, 1)
+        end = min(start + 4, paginator.num_pages)
+        start = max(end - 4, 1)
+
+        context["page_range"] = range(start, end + 1)
 
         context["breadcrumbs"] = [
             {
@@ -192,9 +209,24 @@ class WorkerDetailView(LoginRequiredMixin, DetailView):
 
 class TaskDetailView(LoginRequiredMixin, DetailView):
     model = Task
+    paginate_by = 5
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        paginator = Paginator(self.object.assignees.all(), self.paginate_by)
+        page_number = self.request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+
+        context["page_obj"] = page_obj
+        context["paginator"] = paginator
+        context["is_paginated"] = page_obj.has_other_pages()
+
+        start = max(context["page_obj"].number - 2, 1)
+        end = min(start + 4, paginator.num_pages)
+        start = max(end - 4, 1)
+
+        context["page_range"] = range(start, end + 1)
 
         context["breadcrumbs"] = [
             {
