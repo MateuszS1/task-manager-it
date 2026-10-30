@@ -139,3 +139,7 @@
     </div>
   {% endfor %}
 {% endblock %}
+
+{% block pagination %}
+  {% include "includes/pagination.html" with pagination_alignment="start" %}
+{% endblock %}
