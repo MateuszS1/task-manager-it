@@ -76,7 +76,7 @@
               </svg>
             {% endif %}
           </span></td>
-          <td><span class="fw-normal">{{ task.priority }}</span></td>
+          <td><span class="fw-normal text-{{ task.priority_color }}">{{ task.get_priority_display }}</span></td>
           <td><span class="fw-normal">{{ task.task_type }}</span></td>
           <td>
             <div class="btn-group">

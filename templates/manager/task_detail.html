@@ -95,8 +95,8 @@
                     </svg>
                     Task Priority
                   </div>
-                  <div class="small card-stats">
-                    {{ task.priority }}
+                  <div class="small card-stats text-{{ task.priority_color }}">
+                    {{ task.get_priority_display }}
                   </div>
                 </div>
               </div>

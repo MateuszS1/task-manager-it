@@ -42,6 +42,13 @@ class Task(models.Model):
         MEDIUM = "MEDIUM", "Medium"
         LOW = "LOW", "Low"
 
+    PRIORITY_COLORS = {
+        Priority.URGENT: "danger",
+        Priority.HIGH: "warning",
+        Priority.MEDIUM: "info",
+        Priority.LOW: "success",
+    }
+
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
     deadline = models.DateField()
@@ -67,3 +74,7 @@ class Task(models.Model):
 
     def get_absolute_url(self):
         return reverse("manager:task-detail", args=[str(self.id)])
+
+    @property
+    def priority_color(self):
+        return self.PRIORITY_COLORS.get(self.priority, "secondary")
