@@ -78,9 +78,9 @@ urlpatterns = [
     ),
     path(
         "workers/create/",
-         WorkerCreateView.as_view(),
-         name="worker-create"
-         ),
+        WorkerCreateView.as_view(),
+        name="worker-create"
+    ),
     path(
         "workers/<int:pk>/update/",
         WorkerUpdateView.as_view(),

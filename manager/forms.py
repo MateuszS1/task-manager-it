@@ -18,12 +18,14 @@ class WorkerCreationForm(UserCreationForm):
             "position",
         )
 
+
 class WorkerUpdateForm(forms.ModelForm):
     class Meta:
         model = Worker
         fields = [
             "position",
         ]
+
 
 class UserUpdateForm(forms.ModelForm):
     class Meta:
@@ -35,6 +37,7 @@ class UserUpdateForm(forms.ModelForm):
             "email",
             "position",
         ]
+
 
 class TaskCreationForm(forms.ModelForm):
     class Meta:
@@ -65,6 +68,7 @@ class TaskAssigneeUpdateForm(forms.ModelForm):
         queryset=get_user_model().objects.all(),
         widget=forms.CheckboxSelectMultiple,
     )
+
     class Meta:
         model = Task
         fields = ["assignees"]
@@ -81,6 +85,7 @@ class TaskTypeSearchForm(forms.Form):
             }
         )
     )
+
 
 class PositionSearchForm(forms.Form):
     name = forms.CharField(
@@ -119,6 +124,7 @@ class TaskSearchForm(forms.Form):
             }
         )
     )
+
 
 def validate_completion_time(
     is_completed: bool,

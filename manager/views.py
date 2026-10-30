@@ -4,11 +4,27 @@ from django.db.models import Count
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import (
+    ListView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+    DetailView
+)
 
-from manager.forms import WorkerCreationForm, TaskCreationForm, WorkerSearchForm, TaskSearchForm, PositionSearchForm, \
-    TaskTypeSearchForm, TaskStatusUpdateForm, TaskAssigneeUpdateForm, WorkerUpdateForm, UserUpdateForm
 from manager.models import TaskType, Position, Worker, Task
+from manager.forms import (
+    WorkerCreationForm,
+    TaskCreationForm,
+    WorkerSearchForm,
+    TaskSearchForm,
+    PositionSearchForm,
+    TaskTypeSearchForm,
+    TaskStatusUpdateForm,
+    TaskAssigneeUpdateForm,
+    WorkerUpdateForm,
+    UserUpdateForm
+)
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -22,7 +38,7 @@ def index(request: HttpRequest) -> HttpResponse:
         context=context
     )
 
-#   List Views
+
 class TaskTypeListView(LoginRequiredMixin, ListView):
     model = TaskType
     template_name = "manager/task_type_list.html"
@@ -58,7 +74,9 @@ class TaskTypeListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         form = TaskTypeSearchForm(self.request.GET)
         if form.is_valid():
-            return self.queryset.filter(name__icontains=form.cleaned_data["name"])
+            return self.queryset.filter(
+                name__icontains=form.cleaned_data["name"]
+            )
         return self.queryset
 
 
@@ -95,7 +113,9 @@ class PositionListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         form = PositionSearchForm(self.request.GET)
         if form.is_valid():
-            return self.queryset.filter(name__icontains=form.cleaned_data["name"])
+            return self.queryset.filter(
+                name__icontains=form.cleaned_data["name"]
+            )
         return self.queryset
 
 
@@ -132,8 +152,11 @@ class WorkerListView(LoginRequiredMixin, ListView):
         queryset = Worker.objects.select_related("position")
         form = WorkerSearchForm(self.request.GET)
         if form.is_valid():
-            return queryset.filter(username__icontains=form.cleaned_data["username"])
+            return queryset.filter(
+                username__icontains=form.cleaned_data["username"]
+            )
         return queryset
+
 
 class TaskListView(LoginRequiredMixin, ListView):
     model = Task
@@ -171,7 +194,7 @@ class TaskListView(LoginRequiredMixin, ListView):
             return queryset.filter(name__icontains=form.cleaned_data["name"])
         return queryset
 
-#   Detail Views
+
 class WorkerDetailView(LoginRequiredMixin, DetailView):
     model = Worker
     paginate_by = 4
@@ -241,7 +264,7 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
 
         return context
 
-#   Create Views
+
 class TaskTypeCreateView(LoginRequiredMixin, CreateView):
     model = TaskType
     fields = "__all__"
@@ -331,7 +354,7 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
 
         return context
 
-#   Update Views
+
 class TaskTypeUpdateView(LoginRequiredMixin, UpdateView):
     model = TaskType
     fields = "__all__"
@@ -354,6 +377,7 @@ class TaskTypeUpdateView(LoginRequiredMixin, UpdateView):
         ]
 
         return context
+
 
 class PositionUpdateView(LoginRequiredMixin, UpdateView):
     model = Position
@@ -398,7 +422,10 @@ class WorkerUpdateView(LoginRequiredMixin, UpdateView):
             },
             {
                 "title": "Details",
-                "url": reverse("manager:worker-detail", kwargs={"pk": self.kwargs.get("pk")}),
+                "url": reverse(
+                    "manager:worker-detail",
+                    kwargs={"pk": self.kwargs.get("pk")}
+                ),
             },
             {
                 "title": "Update",
@@ -423,7 +450,10 @@ class TaskStatusUpdateView(LoginRequiredMixin, UpdateView):
             },
             {
                 "title": "Details",
-                "url": reverse("manager:task-detail", kwargs={"pk": self.kwargs.get("pk")}),
+                "url": reverse(
+                    "manager:task-detail",
+                    kwargs={"pk": self.kwargs.get("pk")}
+                ),
             },
             {
                 "title": "Update",
@@ -432,6 +462,7 @@ class TaskStatusUpdateView(LoginRequiredMixin, UpdateView):
         ]
 
         return context
+
 
 class TaskAssigneeUpdateView(LoginRequiredMixin, UpdateView):
     model = Task
@@ -447,7 +478,10 @@ class TaskAssigneeUpdateView(LoginRequiredMixin, UpdateView):
             },
             {
                 "title": "Details",
-                "url": reverse("manager:task-detail", kwargs={"pk": self.kwargs.get("pk")}),
+                "url": reverse(
+                    "manager:task-detail",
+                    kwargs={"pk": self.kwargs.get("pk")}
+                ),
             },
             {
                 "title": "Update",
@@ -457,7 +491,7 @@ class TaskAssigneeUpdateView(LoginRequiredMixin, UpdateView):
 
         return context
 
-#   Delete Views
+
 class TaskTypeDeleteView(LoginRequiredMixin, DeleteView):
     model = TaskType
     success_url = reverse_lazy("manager:task-type-list")
