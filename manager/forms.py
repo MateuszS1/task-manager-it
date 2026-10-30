@@ -1,5 +1,8 @@
+import datetime
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
 
 from manager.models import Task, Worker
 
@@ -48,6 +51,12 @@ class TaskStatusUpdateForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ["is_completed"]
+
+    def clean_is_completed(self):
+        return validate_completion_time(
+            self.cleaned_data["is_completed"],
+            self.instance.deadline
+        )
 
 
 class TaskAssigneeUpdateForm(forms.ModelForm):
@@ -105,3 +114,11 @@ class TaskSearchForm(forms.Form):
             }
         )
     )
+
+def validate_completion_time(
+    is_completed: bool,
+    deadline: datetime.date,
+):
+    if datetime.date.today() > deadline:
+        raise ValidationError("Task deadline has already passed.")
+    return is_completed
