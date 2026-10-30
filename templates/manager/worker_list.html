@@ -87,71 +87,73 @@
             </div>
           </td>
         </tr>
-        <div class="modal fade"
-             id="deleteWorkerModal{{ worker.id }}"
-             tabindex="-1"
-             aria-labelledby="deleteWorkerModalLabel{{ worker.id }}"
-             aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              {% if user.id == worker.id %}
-                <div class="modal-header">
-                  <h5 class="modal-title"
-                      id="deleteWorkerModalLabel{{ worker.id }}">
-                    Error
-                  </h5>
-                  <button type="button" class="btn-close"
-                          data-bs-dismiss="modal"
-                          aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body">
-                  You cannot delete your own account.
-                </div>
-
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-gray-200"
-                          data-bs-dismiss="modal">
-                    Cancel
-                  </button>
-                </div>
-              {% else %}
-                <div class="modal-header">
-                  <h5 class="modal-title"
-                      id="deleteWorkerModalLabel{{ worker.id }}">
-                    Confirm deletion
-                  </h5>
-                  <button type="button" class="btn-close"
-                          data-bs-dismiss="modal"
-                          aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body">
-                  Are you sure you want to delete
-                  <strong>{{ worker.name }}</strong>?
-                  This action cannot be undone.
-                </div>
-
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-gray-200"
-                          data-bs-dismiss="modal">
-                    Cancel
-                  </button>
-
-                  <form method="post"
-                        action="{% url 'manager:worker-delete' pk=worker.pk %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">
-                      Delete
-                    </button>
-                  </form>
-                </div>
-              {% endif %}
-            </div>
-          </div>
-        </div>
       {% endfor %}
       </tbody>
     </table>
   </div>
+  {% for worker in worker_list %}
+    <div class="modal fade"
+         id="deleteWorkerModal{{ worker.id }}"
+         tabindex="-1"
+         aria-labelledby="deleteWorkerModalLabel{{ worker.id }}"
+         aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          {% if user.id == worker.id %}
+            <div class="modal-header">
+              <h5 class="modal-title"
+                  id="deleteWorkerModalLabel{{ worker.id }}">
+                Error
+              </h5>
+              <button type="button" class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+              You cannot delete your own account.
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-gray-200"
+                      data-bs-dismiss="modal">
+                Cancel
+              </button>
+            </div>
+          {% else %}
+            <div class="modal-header">
+              <h5 class="modal-title"
+                  id="deleteWorkerModalLabel{{ worker.id }}">
+                Confirm deletion
+              </h5>
+              <button type="button" class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+              Are you sure you want to delete
+              <strong>{{ worker.name }}</strong>?
+              This action cannot be undone.
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-gray-200"
+                      data-bs-dismiss="modal">
+                Cancel
+              </button>
+
+              <form method="post"
+                    action="{% url 'manager:worker-delete' pk=worker.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                  Delete
+                </button>
+              </form>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
 {% endblock %}

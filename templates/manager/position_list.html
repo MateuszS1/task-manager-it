@@ -72,83 +72,86 @@
               <div class="dropdown-menu py-0">
                 <a class="dropdown-item rounded-top" href="{% url 'manager:position-update' pk=position.id %}"><span
                     class="fas fa-eye me-2"></span>Edit</a>
-              <button type="button"
-                      class="dropdown-item text-danger"
-                      data-bs-toggle="modal"
-                      data-bs-target="#deletePositionModal{{ position.id }}">
-                <span class="fas fa-trash-alt me-2"></span>
-                Remove
-              </button>
+                <button type="button"
+                        class="dropdown-item text-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deletePositionModal{{ position.id }}">
+                  <span class="fas fa-trash-alt me-2"></span>
+                  Remove
+                </button>
               </div>
             </div>
           </td>
         </tr>
-        <div class="modal fade"
-             id="deletePositionModal{{ position.id }}"
-             tabindex="-1"
-             aria-labelledby="deletePositionModalLabel{{ position.id }}"
-             aria-hidden="true">
-
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              {% if position.worker_count > 0 %}
-                <div class="modal-header">
-                  <h5 class="modal-title"
-                      id="deletePositionModalLabel{{ position.id }}">
-                    Error
-                  </h5>
-                  <button type="button" class="btn-close"
-                          data-bs-dismiss="modal"
-                          aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body">
-                  You cannot delete position that still has workers assigned to it.
-                </div>
-
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-gray-200"
-                          data-bs-dismiss="modal">
-                    Cancel
-                  </button>
-                </div>
-              {% else %}
-                <div class="modal-header">
-                  <h5 class="modal-title"
-                      id="deletePositionModalLabel{{ position.id }}">
-                    Confirm deletion
-                  </h5>
-                  <button type="button" class="btn-close"
-                          data-bs-dismiss="modal"
-                          aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body">
-                  Are you sure you want to delete
-                  <strong>{{ position.name }}</strong>?
-                  This action cannot be undone.
-                </div>
-
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-gray-200"
-                          data-bs-dismiss="modal">
-                    Cancel
-                  </button>
-
-                  <form method="post"
-                        action="{% url 'manager:position-delete' pk=position.pk %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">
-                      Delete
-                    </button>
-                  </form>
-                </div>
-              {% endif %}
-            </div>
-          </div>
-        </div>
       {% endfor %}
       </tbody>
     </table>
   </div>
+
+  {% for position in position_list %}
+    <div class="modal fade"
+         id="deletePositionModal{{ position.id }}"
+         tabindex="-1"
+         aria-labelledby="deletePositionModalLabel{{ position.id }}"
+         aria-hidden="true">
+
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          {% if position.worker_count > 0 %}
+            <div class="modal-header">
+              <h5 class="modal-title"
+                  id="deletePositionModalLabel{{ position.id }}">
+                Error
+              </h5>
+              <button type="button" class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+              You cannot delete position that still has workers assigned to it.
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-gray-200"
+                      data-bs-dismiss="modal">
+                Cancel
+              </button>
+            </div>
+          {% else %}
+            <div class="modal-header">
+              <h5 class="modal-title"
+                  id="deletePositionModalLabel{{ position.id }}">
+                Confirm deletion
+              </h5>
+              <button type="button" class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+              Are you sure you want to delete
+              <strong>{{ position.name }}</strong>?
+              This action cannot be undone.
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-gray-200"
+                      data-bs-dismiss="modal">
+                Cancel
+              </button>
+
+              <form method="post"
+                    action="{% url 'manager:position-delete' pk=position.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                  Delete
+                </button>
+              </form>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
 {% endblock %}
