@@ -71,9 +71,9 @@ class WorkerModelTests(TestCase):
             name="test_position"
         )
         self.worker = get_user_model().objects.create_user(
-            username="test_user",
-            first_name="test",
-            last_name="user",
+            username="test_user1",
+            first_name="test1",
+            last_name="user1",
             password="q1a2z3w4",
             position=self.position,
         )
@@ -90,3 +90,26 @@ class WorkerModelTests(TestCase):
 
     def test_get_absolute_url(self):
         self.assertEqual("/workers/1/", self.worker.get_absolute_url())
+
+    def test_worker_ordering(self):
+        get_user_model().objects.create_user(
+            username="test_user3",
+            first_name="test3",
+            last_name="user3",
+            password="q1a2z3w4",
+            position=self.position,
+        )
+        get_user_model().objects.create_user(
+            username="test_user2",
+            first_name="test2",
+            last_name="user2",
+            password="q1a2z3w4",
+            position=self.position,
+        )
+
+        workers = get_user_model().objects.all()
+
+        self.assertEqual(
+            ["test_user1", "test_user2", "test_user3"],
+            list(workers.values_list("username", flat=True))
+        )
