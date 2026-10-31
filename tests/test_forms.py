@@ -1,11 +1,59 @@
+import datetime
+
 from django.test import TestCase
 
 from manager.forms import (
     TaskTypeSearchForm,
     PositionSearchForm,
     WorkerSearchForm,
-    TaskSearchForm
+    TaskSearchForm,
+    TaskStatusUpdateForm
 )
+from manager.models import TaskType, Task
+
+
+class TaskStatusUpdateFormTests(TestCase):
+    def setUp(self):
+        self.task_type = TaskType.objects.create(
+            name="test_task_name"
+        )
+
+    def test_task_form_updates_status(self):
+        task = Task.objects.create(
+            name="test_task",
+            description="Task description",
+            deadline=datetime.date.today(),
+            priority=Task.Priority.LOW,
+            task_type=self.task_type,
+        )
+
+        form = TaskStatusUpdateForm(
+            data={"is_completed": True},
+            instance=task,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+
+        task = form.save()
+
+        self.assertTrue(task.is_completed)
+
+    def test_task_form_updates_status_after_deadline(self):
+        task = Task.objects.create(
+            name="test_task",
+            description="Task description",
+            deadline=datetime.date.today() - datetime.timedelta(days=1),
+            priority=Task.Priority.LOW,
+            task_type=self.task_type,
+        )
+
+        form = TaskStatusUpdateForm(
+            data={"is_completed": True},
+            instance=task,
+        )
+
+        self.assertFalse(form.is_valid(), form.errors)
+        self.assertIn("is_completed", form.errors)
 
 
 class PositionSearchFormTests(TestCase):
