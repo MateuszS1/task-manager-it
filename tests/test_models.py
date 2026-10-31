@@ -1,7 +1,9 @@
+import datetime
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from manager.models import TaskType, Position
+from manager.models import TaskType, Position, Task
 
 
 class TaskTypeModelTests(TestCase):
@@ -65,6 +67,7 @@ class PositionModelTests(TestCase):
             list(position.values_list("name", flat=True))
         )
 
+
 class WorkerModelTests(TestCase):
     def setUp(self) -> None:
         self.position = Position.objects.create(
@@ -113,3 +116,85 @@ class WorkerModelTests(TestCase):
             ["test_user1", "test_user2", "test_user3"],
             list(workers.values_list("username", flat=True))
         )
+
+
+class TaskModelTests(TestCase):
+    def setUp(self):
+        position = Position.objects.create(
+            name="test_position"
+        )
+        self.worker = get_user_model().objects.create_user(
+            username="test_user1",
+            first_name="test1",
+            last_name="user1",
+            password="q1a2z3w4",
+            position=position,
+        )
+
+        self.task_type = TaskType.objects.create(
+            name="test_type1",
+        )
+
+        self.task = Task.objects.create(
+            name="test_task1",
+            description="Task description 1",
+            deadline=datetime.date.today(),
+            priority=Task.Priority.LOW,
+            task_type=self.task_type,
+        )
+
+    def test_task_str(self):
+        self.assertEqual(
+            self.task.name,
+            str(self.task)
+        )
+
+    def test_task_ordering(self):
+        Task.objects.create(
+            name="test_task3",
+            description="Task description 3",
+            deadline=datetime.date.today(),
+            priority=Task.Priority.LOW,
+            task_type=self.task_type,
+        )
+        Task.objects.create(
+            name="test_task2",
+            description="Task description 2",
+            deadline=datetime.date.today(),
+            priority=Task.Priority.LOW,
+            task_type=self.task_type,
+        )
+
+        task = Task.objects.all()
+
+        self.assertEqual(
+            ["test_task1", "test_task2", "test_task3"],
+            list(task.values_list("name", flat=True))
+        )
+
+    def test_get_absolute_url(self):
+        self.assertEqual("/tasks/1/", self.task.get_absolute_url())
+
+    def test_priority_color(self):
+        expected_colors = {
+            Task.Priority.URGENT: "danger",
+            Task.Priority.HIGH: "warning",
+            Task.Priority.MEDIUM: "info",
+            Task.Priority.LOW: "success",
+        }
+
+        for priority, color in expected_colors.items():
+            self.task.priority = priority
+            self.assertEqual(self.task.priority_color, color)
+
+    def test_priority_color_fallback(self):
+        self.task.priority = "UNKNOWN"
+        self.assertEqual(self.task.priority_color, "secondary")
+
+    def test_task_type_relationship(self):
+        self.assertEqual(self.task.task_type, self.task_type)
+
+    def test_worker_relationship(self):
+        self.task.assignees.add(self.worker)
+        self.assertIn(self.worker, self.task.assignees.all())
+        self.assertIn(self.task, self.worker.tasks.all())
