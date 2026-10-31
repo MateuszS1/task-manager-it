@@ -10,20 +10,20 @@ class TaskTypeModelTests(TestCase):
             name="test_type1",
         )
 
-    def test_manufacturer_max_length(self):
+    def test_task_type_max_length(self):
         name_max_length = self.task_type._meta.get_field(
             "name"
         ).max_length
 
         self.assertEqual(255, name_max_length)
 
-    def test_manufacturer_str(self):
+    def test_task_type_str(self):
         self.assertEqual(
             self.task_type.name,
             str(self.task_type)
         )
 
-    def test_manufacturer_ordering(self):
+    def test_task_type_ordering(self):
         TaskType.objects.create(name="test_type3")
         TaskType.objects.create(name="test_type2")
 
@@ -41,20 +41,20 @@ class PositionModelTests(TestCase):
             name="test_position1",
         )
 
-    def test_manufacturer_max_length(self):
+    def test_position_max_length(self):
         name_max_length = self.position._meta.get_field(
             "name"
         ).max_length
 
         self.assertEqual(255, name_max_length)
 
-    def test_manufacturer_str(self):
+    def test_position_str(self):
         self.assertEqual(
             self.position.name,
             str(self.position)
         )
 
-    def test_manufacturer_ordering(self):
+    def test_position_ordering(self):
         Position.objects.create(name="test_position3")
         Position.objects.create(name="test_position2")
 
@@ -82,7 +82,7 @@ class WorkerModelTests(TestCase):
         self.assertEqual("worker", self.worker._meta.verbose_name)
         self.assertEqual("workers", self.worker._meta.verbose_name_plural)
 
-    def test_manufacturer_str(self):
+    def test_worker_str(self):
         self.assertEqual(
             f"{self.worker.first_name} {self.worker.last_name}",
             str(self.worker)
