@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}
+  <title>Task Type List</title>
+{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4 pe-2">
+    <div class="d-block mb-4 mb-md-0 ps-2">
+      {% include "includes/breadcrumb.html" with breadcrumbs=breadcrumbs %}
+      <h2 class="h4">All Task Types</h2>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <a href="{% url 'manager:task-type-create' %}" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
+        <svg class="icon icon-xs me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+             xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        New Task Type
+      </a>
+    </div>
+  </div>
+
+  <div class="table-settings mb-4">
+    <div class="row align-items-center justify-content-between">
+      <div class="col col-md-6 col-lg-3 col-xl-4">
+        <form method="get" action="">
+          <div class="input-group me-2 me-lg-3 fmxw-400">
+          <span class="input-group-text">
+            <svg class="icon icon-xs"
+                 xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 20 20"
+                 fill="currentColor"
+                 aria-hidden="true">
+              <path fill-rule="evenodd"
+                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                    clip-rule="evenodd"></path>
+            </svg>
+          </span>
+            {{ search_form.name }}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="card card-body border-0 shadow table-wrapper table-responsive">
+    <table class="table table-hover">
+      <thead>
+      <tr>
+        <th class="border-gray-200">Id</th>
+        <th class="border-gray-200">Task Type</th>
+        <th class="border-gray-200">Amount of Tasks with Type</th>
+        <th class="border-gray-200">Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for task_type in task_type_list %}
+        <tr>
+          <td><span class="fw-normal">{{ task_type.id }}</span></td>
+          <td><span class="fw-normal">{{ task_type.name }}</span></td>
+          <td><span class="fw-normal">{{ task_type.task_count }}</span></td>
+          <td>
+            <div class="btn-group">
+              <button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0"
+                      data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="icon icon-sm">
+                                            <span class="fas fa-ellipsis-h icon-dark"></span>
+                                        </span>
+                <span class="visually-hidden">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu py-0">
+                <a class="dropdown-item rounded-top" href="{% url 'manager:task-type-update' pk=task_type.id %}"><span
+                    class="fas fa-eye me-2"></span>Edit</a>
+                <button type="button"
+                        class="dropdown-item text-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteTaskTypeModal{{ task_type.id }}">
+                  <span class="fas fa-trash-alt me-2"></span>
+                  Remove
+                </button>
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% for task_type in task_type_list %}
+    <div class="modal fade"
+         id="deleteTaskTypeModal{{ task_type.id }}"
+         tabindex="-1"
+         aria-labelledby="deleteTaskTypeModalLabel{{ task_type.id }}"
+         aria-hidden="true">
+
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          {% if task_type.task_count > 0 %}
+            <div class="modal-header">
+              <h5 class="modal-title"
+                  id="deleteTaskTypeModalLabel{{ task_type.id }}">
+                Error
+              </h5>
+              <button type="button" class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+              You cannot delete type that still has tasks assigned to it.
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-gray-200"
+                      data-bs-dismiss="modal">
+                Cancel
+              </button>
+            </div>
+          {% else %}
+            <div class="modal-header">
+              <h5 class="modal-title"
+                  id="deleteTaskTypeModalLabel{{ task_type.id }}">
+                Confirm deletion
+              </h5>
+              <button type="button" class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+              Are you sure you want to delete
+              <strong>{{ task_type.name }}</strong>?
+              This action cannot be undone.
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-gray-200"
+                      data-bs-dismiss="modal">
+                Cancel
+              </button>
+
+              <form method="post"
+                    action="{% url 'manager:task-type-delete' pk=task_type.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                  Delete
+                </button>
+              </form>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}
+
+{% block pagination %}
+  {% include "includes/pagination.html" with pagination_alignment="start" %}
+{% endblock %}
