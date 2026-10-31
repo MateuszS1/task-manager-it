@@ -325,7 +325,7 @@ class WorkerCreateView(LoginRequiredMixin, CreateView):
 
         context["breadcrumbs"] = [
             {
-                "title": "Worker",
+                "title": "Workers",
                 "url": reverse("manager:worker-list"),
             },
             {
@@ -375,7 +375,7 @@ class TaskTypeUpdateView(LoginRequiredMixin, UpdateView):
                 "url": reverse("manager:task-type-list"),
             },
             {
-                "title": "Create",
+                "title": "Update",
                 "active": True,
             },
         ]
@@ -397,7 +397,7 @@ class PositionUpdateView(LoginRequiredMixin, UpdateView):
                 "url": reverse("manager:position-list"),
             },
             {
-                "title": "Create",
+                "title": "Update",
                 "active": True,
             },
         ]
