@@ -8,9 +8,95 @@ from manager.forms import (
     PositionSearchForm,
     WorkerSearchForm,
     TaskSearchForm,
-    TaskStatusUpdateForm, TaskAssigneeUpdateForm
+    TaskStatusUpdateForm, TaskAssigneeUpdateForm, TaskCreationForm, WorkerCreationForm
 )
 from manager.models import TaskType, Task, Position
+
+
+class WorkerCreationFormTests(TestCase):
+    def setUp(self):
+        self.position = Position.objects.create(
+            name="test_position"
+        )
+
+    def test_form_saves_worker_with_selected_data(self):
+        form = WorkerCreationForm(data={
+            "username": "test_user",
+            "first_name": "test",
+            "last_name": "user",
+            "email": "test@test.com",
+            "password1": "q1a2z3w4",
+            "password2": "q1a2z3w4",
+            "position": self.position,
+        })
+
+        worker = form.save()
+
+        self.assertEqual(worker.username, "test_user")
+        self.assertEqual(worker.first_name, "test")
+        self.assertEqual(worker.last_name, "user")
+        self.assertEqual(worker.email, "test@test.com")
+        self.assertTrue(worker.check_password("q1a2z3w4"))
+        self.assertEqual(worker.position, self.position)
+
+    def test_missing_required_fields(self):
+        form = WorkerCreationForm(data={})
+
+        self.assertFalse(form.is_valid())
+
+        expected_errors = {
+            "username",
+            "password1",
+            "password2",
+            "position",
+        }
+
+        self.assertEqual(
+            expected_errors,
+            set(form.errors.keys())
+        )
+
+
+class TaskCreationFormTests(TestCase):
+    def setUp(self):
+        self.task_type = TaskType.objects.create(
+            name="test_task_name"
+        )
+
+    def test_form_saves_task_with_selected_data(self):
+        form = TaskCreationForm(data={
+            "name": "test_task",
+            "description": "Task description",
+            "deadline": datetime.date.today(),
+            "priority": Task.Priority.LOW,
+            "task_type": self.task_type,
+        })
+
+        task = form.save()
+
+        self.assertEqual(task.name, "test_task")
+        self.assertEqual(task.description, "Task description")
+        self.assertEqual(task.deadline, datetime.date.today())
+        self.assertEqual(task.priority, Task.Priority.LOW)
+        self.assertEqual(task.task_type, self.task_type)
+
+    def test_missing_required_fields(self):
+        form = TaskCreationForm(data={})
+
+        self.assertFalse(form.is_valid())
+
+        expected_errors = {
+            "name",
+            "description",
+            "deadline",
+            "priority",
+            "task_type",
+        }
+
+        self.assertEqual(
+            expected_errors,
+            set(form.errors.keys())
+        )
 
 
 class TaskStatusUpdateFormTests(TestCase):
@@ -87,7 +173,7 @@ class TaskAssigneeUpdateFormTests(TestCase):
             position=self.position,
         )
 
-    def test_form_saves_car_with_selected_drivers(self):
+    def test_form_saves_task_with_selected_workers(self):
         form = TaskAssigneeUpdateForm(
             data={"assignees": [self.worker1.pk, self.worker2.pk], },
             instance=self.task,
