@@ -1,0 +1,132 @@
+from django.test import TestCase
+
+from manager.forms import (
+    TaskTypeSearchForm,
+    PositionSearchForm,
+    WorkerSearchForm,
+    TaskSearchForm
+)
+
+
+class PositionSearchFormTests(TestCase):
+    def test_position_empty_name_is_valid(self):
+        form = PositionSearchForm(data={"name": ""})
+
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data["name"], "")
+
+    def test_position_valid_name_search(self):
+        form = PositionSearchForm(data={"name": "test_position"})
+
+        self.assertTrue(form.is_valid())
+        self.assertEqual(
+            form.cleaned_data["name"],
+            "test_position",
+        )
+
+    def test_position_name_exceeding_max_length_is_invalid(self):
+        form = PositionSearchForm(data={"name": "A" * 256})
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("name", form.errors)
+
+    def test_position_name_widget_placeholder(self):
+        form = PositionSearchForm()
+
+        self.assertEqual(
+            form.fields["name"].widget.attrs["placeholder"],
+            "Search by name",
+        )
+
+
+class TaskTypeSearchFormTests(TestCase):
+    def test_task_type_empty_name_is_valid(self):
+        form = TaskTypeSearchForm(data={"name": ""})
+
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data["name"], "")
+
+    def test_task_type_valid_name_search(self):
+        form = TaskTypeSearchForm(data={"name": "test_type"})
+
+        self.assertTrue(form.is_valid())
+        self.assertEqual(
+            form.cleaned_data["name"],
+            "test_type",
+        )
+
+    def test_task_type_name_exceeding_max_length_is_invalid(self):
+        form = TaskTypeSearchForm(data={"name": "A" * 256})
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("name", form.errors)
+
+    def test_task_type_name_widget_placeholder(self):
+        form = TaskTypeSearchForm()
+
+        self.assertEqual(
+            form.fields["name"].widget.attrs["placeholder"],
+            "Search by name",
+        )
+
+
+class WorkerSearchFormTests(TestCase):
+    def test_worker_empty_username_is_valid(self):
+        form = WorkerSearchForm(data={"username": ""})
+
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data["username"], "")
+
+    def test_worker_valid_username_search(self):
+        form = WorkerSearchForm(data={"username": "test_user"})
+
+        self.assertTrue(form.is_valid())
+        self.assertEqual(
+            form.cleaned_data["username"],
+            "test_user",
+        )
+
+    def test_worker_username_exceeding_max_length_is_invalid(self):
+        form = WorkerSearchForm(data={"username": "A" * 256})
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("username", form.errors)
+
+    def test_worker_username_widget_placeholder(self):
+        form = WorkerSearchForm()
+
+        self.assertEqual(
+            form.fields["username"].widget.attrs["placeholder"],
+            "Search by username",
+        )
+
+
+class TaskSearchFormTests(TestCase):
+    def test_task_empty_name_is_valid(self):
+        form = TaskSearchForm(data={"name": ""})
+
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data["name"], "")
+
+    def test_task_valid_name_search(self):
+        form = TaskSearchForm(data={"name": "test_task"})
+
+        self.assertTrue(form.is_valid())
+        self.assertEqual(
+            form.cleaned_data["name"],
+            "test_task",
+        )
+
+    def test_task_name_exceeding_max_length_is_invalid(self):
+        form = TaskSearchForm(data={"name": "A" * 256})
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("name", form.errors)
+
+    def test_task_name_widget_placeholder(self):
+        form = TaskSearchForm()
+
+        self.assertEqual(
+            form.fields["name"].widget.attrs["placeholder"],
+            "Search by name",
+        )
