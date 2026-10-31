@@ -31,8 +31,8 @@ class Worker(AbstractUser):
     )
 
     class Meta:
-        verbose_name = "Worker"
-        verbose_name_plural = "Workers"
+        verbose_name = "worker"
+        verbose_name_plural = "workers"
         ordering = ["username"]
 
     def __str__(self):
