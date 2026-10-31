@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from manager.models import TaskType, Position
@@ -63,3 +64,29 @@ class PositionModelTests(TestCase):
             ["test_position1", "test_position2", "test_position3"],
             list(position.values_list("name", flat=True))
         )
+
+class WorkerModelTests(TestCase):
+    def setUp(self) -> None:
+        self.position = Position.objects.create(
+            name="test_position"
+        )
+        self.worker = get_user_model().objects.create_user(
+            username="test_user",
+            first_name="test",
+            last_name="user",
+            password="q1a2z3w4",
+            position=self.position,
+        )
+
+    def test_verbose_name(self):
+        self.assertEqual("worker", self.worker._meta.verbose_name)
+        self.assertEqual("workers", self.worker._meta.verbose_name_plural)
+
+    def test_manufacturer_str(self):
+        self.assertEqual(
+            f"{self.worker.first_name} {self.worker.last_name}",
+            str(self.worker)
+        )
+
+    def test_get_absolute_url(self):
+        self.assertEqual("/workers/1/", self.worker.get_absolute_url())
