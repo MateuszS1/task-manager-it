@@ -2,7 +2,69 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from manager.models import Position
+from manager.models import Position, TaskType
+
+
+class TaskTypeAdminSiteTests(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+
+        position = Position.objects.create(
+            name="test_position"
+        )
+        self.user = get_user_model().objects.create_superuser(
+            username="test_user",
+            first_name="test",
+            last_name="user",
+            password="q1a2z3w4",
+            position=position,
+        )
+        self.client.force_login(self.user)
+
+        self.task_type = TaskType.objects.create(
+            name="test_name1"
+        )
+
+    def test_task_type_name_listed(self):
+        url = reverse("admin:manager_tasktype_changelist")
+        res = self.client.get(url)
+
+        self.assertContains(res, self.task_type.name)
+
+    def test_task_type_detail_name_listed(self):
+        url = reverse("admin:manager_tasktype_change", args=[self.task_type.id])
+        res = self.client.get(url)
+
+        self.assertContains(res, self.task_type.name)
+
+
+class PositionAdminSiteTests(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+
+        self.position = Position.objects.create(
+            name="test_position"
+        )
+        self.user = get_user_model().objects.create_superuser(
+            username="test_user",
+            first_name="test",
+            last_name="user",
+            password="q1a2z3w4",
+            position=self.position,
+        )
+        self.client.force_login(self.user)
+
+    def test_position_name_listed(self):
+        url = reverse("admin:manager_position_changelist")
+        res = self.client.get(url)
+
+        self.assertContains(res, self.position.name)
+
+    def test_position_detail_name_listed(self):
+        url = reverse("admin:manager_position_change", args=[self.position.id])
+        res = self.client.get(url)
+
+        self.assertContains(res, self.position.name)
 
 
 class WorkerAdminSiteTests(TestCase):
