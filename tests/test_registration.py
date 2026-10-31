@@ -8,7 +8,7 @@ from manager.models import TaskType, Position, Worker, Task
 
 class PublicHomePageTests(TestCase):
     def test_home_page_login_not_required(self):
-        res = self.client.get(reverse('manager:index'))
+        res = self.client.get(reverse("manager:index"))
         self.assertEqual(res.status_code, 200)
 
 
@@ -17,11 +17,11 @@ class PublicTaskTypeTests(TestCase):
         self.task_type = TaskType.objects.create(name="test_type1")
 
     def test_task_type_list_login_required(self):
-        response = self.client.get(reverse('manager:task-type-list'))
+        response = self.client.get(reverse("manager:task-type-list"))
         self.assertNotEqual(response.status_code, 200)
 
     def test_task_type_create_login_required(self):
-        response = self.client.get(reverse('manager:task-type-create'))
+        response = self.client.get(reverse("manager:task-type-create"))
         self.assertNotEqual(response.status_code, 200)
 
     def test_task_type_update_required(self):
@@ -39,11 +39,11 @@ class PublicPositionAccessTests(TestCase):
         self.position = Position.objects.create(name="test_type1")
 
     def test_position_list_login_required(self):
-        response = self.client.get(reverse('manager:position-list'))
+        response = self.client.get(reverse("manager:position-list"))
         self.assertNotEqual(response.status_code, 200)
 
     def test_task_type_create_login_required(self):
-        response = self.client.get(reverse('manager:position-create'))
+        response = self.client.get(reverse("manager:position-create"))
         self.assertNotEqual(response.status_code, 200)
 
     def test_task_type_update_required(self):
@@ -69,11 +69,11 @@ class PublicWorkerAccessTests(TestCase):
         )
 
     def test_worker_list_login_required(self):
-        response = self.client.get(reverse('manager:worker-list'))
+        response = self.client.get(reverse("manager:worker-list"))
         self.assertNotEqual(response.status_code, 200)
 
     def test_worker_create_login_required(self):
-        response = self.client.get(reverse('manager:worker-create'))
+        response = self.client.get(reverse("manager:worker-create"))
         self.assertNotEqual(response.status_code, 200)
 
     def test_worker_update_required(self):
@@ -118,11 +118,11 @@ class PublicTaskAccessTests(TestCase):
         )
 
     def test_task_list_login_required(self):
-        response = self.client.get(reverse('manager:task-list'))
+        response = self.client.get(reverse("manager:task-list"))
         self.assertNotEqual(response.status_code, 200)
 
     def test_task_create_login_required(self):
-        response = self.client.get(reverse('manager:task-create'))
+        response = self.client.get(reverse("manager:task-create"))
         self.assertNotEqual(response.status_code, 200)
 
     def test_task_update_required(self):

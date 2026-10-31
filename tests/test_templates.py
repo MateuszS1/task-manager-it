@@ -23,13 +23,13 @@ class PrivateTaskTypeTemplateTests(TestCase):
         self.task_type = TaskType.objects.create(name="test_type1")
 
     def test_task_type_list_response(self):
-        response = self.client.get(reverse('manager:task-type-list'))
+        response = self.client.get(reverse("manager:task-type-list"))
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "manager/task_type_list.html")
 
     def test_task_type_create_response(self):
-        response = self.client.get(reverse('manager:task-type-create'))
+        response = self.client.get(reverse("manager:task-type-create"))
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "manager/task_type_form.html")
@@ -59,13 +59,13 @@ class PrivatePositionTemplateTests(TestCase):
         self.client.force_login(self.user)
 
     def test_position_list_response(self):
-        response = self.client.get(reverse('manager:position-list'))
+        response = self.client.get(reverse("manager:position-list"))
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "manager/position_list.html")
 
     def test_position_create_response(self):
-        response = self.client.get(reverse('manager:position-create'))
+        response = self.client.get(reverse("manager:position-create"))
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "manager/position_form.html")
@@ -95,7 +95,7 @@ class PrivateWorkerTemplateTests(TestCase):
         self.client.force_login(self.user)
 
     def test_worker_list_response(self):
-        response = self.client.get(reverse('manager:worker-list'))
+        response = self.client.get(reverse("manager:worker-list"))
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "manager/worker_list.html")
@@ -111,7 +111,7 @@ class PrivateWorkerTemplateTests(TestCase):
         self.assertTemplateUsed(response, "manager/worker_detail.html")
 
     def test_worker_create_response(self):
-        response = self.client.get(reverse('manager:worker-create'))
+        response = self.client.get(reverse("manager:worker-create"))
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "manager/worker_form.html")
@@ -153,7 +153,7 @@ class PrivateTaskTemplateTests(TestCase):
         )
 
     def test_task_list_response(self):
-        response = self.client.get(reverse('manager:task-list'))
+        response = self.client.get(reverse("manager:task-list"))
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "manager/task_list.html")
@@ -169,7 +169,7 @@ class PrivateTaskTemplateTests(TestCase):
         self.assertTemplateUsed(response, "manager/task_detail.html")
 
     def test_task_create_response(self):
-        response = self.client.get(reverse('manager:task-create'))
+        response = self.client.get(reverse("manager:task-create"))
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "manager/task_form.html")

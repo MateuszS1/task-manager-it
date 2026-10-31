@@ -55,12 +55,57 @@ class PrivatePositionTest(TestCase):
         for i in range(1, 7):
             Position.objects.create(name=f"test_name{i}")
 
-        response = self.client.get(reverse('manager:position-list'))
+        response = self.client.get(reverse("manager:position-list"))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["page_obj"]), 5)
         self.assertTrue(response.context["is_paginated"])
         self.assertEqual(response.context["paginator"].num_pages, 2)
+
+    def test_position_list_breadcrumbs_assigned_correctly(self):
+        response = self.client.get(reverse("manager:position-list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["breadcrumbs"]), 1)
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["title"],
+            "Positions"
+        )
+        self.assertTrue(response.context["breadcrumbs"][0]["active"])
+
+    def test_position_create_breadcrumbs_assigned_correctly(self):
+        response = self.client.get(reverse("manager:position-create"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["breadcrumbs"]), 2)
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["title"],
+            "Positions"
+        )
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["url"],
+            reverse("manager:position-list")
+        )
+        self.assertEqual(response.context["breadcrumbs"][1]["title"], "Create")
+        self.assertTrue(response.context["breadcrumbs"][1]["active"])
+
+    def test_position_update_breadcrumbs_assigned_correctly(self):
+        response = self.client.get(
+            reverse("manager:position-update", kwargs={"pk": self.position.id})
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["breadcrumbs"]), 2)
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["title"],
+            "Positions"
+        )
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["url"],
+            reverse("manager:position-list")
+        )
+        self.assertEqual(response.context["breadcrumbs"][1]["title"], "Update")
+        self.assertTrue(response.context["breadcrumbs"][1]["active"])
 
 
 class PrivateTaskTypeTest(TestCase):
@@ -118,12 +163,60 @@ class PrivateTaskTypeTest(TestCase):
         for i in range(1, 7):
             TaskType.objects.create(name=f"test_name{i}")
 
-        response = self.client.get(reverse('manager:task-type-list'))
+        response = self.client.get(reverse("manager:task-type-list"))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["page_obj"]), 5)
         self.assertTrue(response.context["is_paginated"])
         self.assertEqual(response.context["paginator"].num_pages, 2)
+
+    def test_task_type_list_breadcrumbs_assigned_correctly(self):
+        response = self.client.get(reverse("manager:task-type-list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["breadcrumbs"]), 1)
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["title"],
+            "Task Types"
+        )
+        self.assertTrue(response.context["breadcrumbs"][0]["active"])
+
+    def test_task_type_create_breadcrumbs_assigned_correctly(self):
+        response = self.client.get(reverse("manager:task-type-create"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["breadcrumbs"]), 2)
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["title"],
+            "Task Types"
+        )
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["url"],
+            reverse("manager:task-type-list")
+        )
+        self.assertEqual(response.context["breadcrumbs"][1]["title"], "Create")
+        self.assertTrue(response.context["breadcrumbs"][1]["active"])
+
+    def test_task_type_update_breadcrumbs_assigned_correctly(self):
+        task_type = TaskType.objects.create(
+            name="test_name1"
+        )
+        response = self.client.get(
+            reverse("manager:task-type-update", kwargs={"pk": task_type.id})
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["breadcrumbs"]), 2)
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["title"],
+            "Task Types"
+        )
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["url"],
+            reverse("manager:task-type-list")
+        )
+        self.assertEqual(response.context["breadcrumbs"][1]["title"], "Update")
+        self.assertTrue(response.context["breadcrumbs"][1]["active"])
 
 
 class PrivateWorkerTest(TestCase):
@@ -227,7 +320,7 @@ class PrivateWorkerTest(TestCase):
                 position=self.position,
             )
 
-        response = self.client.get(reverse('manager:worker-list'))
+        response = self.client.get(reverse("manager:worker-list"))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["page_obj"]), 5)
@@ -261,6 +354,62 @@ class PrivateWorkerTest(TestCase):
         self.assertEqual(len(response.context["page_obj"]), 4)
         self.assertTrue(response.context["is_paginated"])
         self.assertEqual(response.context["paginator"].num_pages, 2)
+
+    def test_worker_list_breadcrumbs_assigned_correctly(self):
+        response = self.client.get(reverse("manager:worker-list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["breadcrumbs"]), 1)
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["title"],
+            "Workers"
+        )
+        self.assertTrue(response.context["breadcrumbs"][0]["active"])
+
+    def test_worker_create_breadcrumbs_assigned_correctly(self):
+        response = self.client.get(reverse("manager:worker-create"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["breadcrumbs"]), 2)
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["title"],
+            "Workers"
+        )
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["url"],
+            reverse("manager:worker-list")
+        )
+        self.assertEqual(
+            response.context["breadcrumbs"][1]["title"],
+            "Create"
+        )
+        self.assertTrue(response.context["breadcrumbs"][1]["active"])
+
+    def test_worker_update_breadcrumbs_assigned_correctly(self):
+        response = self.client.get(
+            reverse("manager:worker-update", kwargs={"pk": self.worker.id})
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["breadcrumbs"]), 3)
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["title"],
+            "Workers"
+        )
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["url"],
+            reverse("manager:worker-list")
+        )
+        self.assertEqual(
+            response.context["breadcrumbs"][1]["title"],
+            "Details"
+        )
+        self.assertEqual(
+            response.context["breadcrumbs"][1]["url"],
+            reverse("manager:worker-detail", kwargs={"pk": self.worker.id})
+        )
+        self.assertEqual(response.context["breadcrumbs"][2]["title"], "Update")
+        self.assertTrue(response.context["breadcrumbs"][2]["active"])
 
 
 class PrivateTaskTest(TestCase):
@@ -399,7 +548,7 @@ class PrivateTaskTest(TestCase):
                 task_type=self.task_type,
             )
 
-        response = self.client.get(reverse('manager:task-list'))
+        response = self.client.get(reverse("manager:task-list"))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["page_obj"]), 5)
@@ -434,3 +583,47 @@ class PrivateTaskTest(TestCase):
         self.assertEqual(len(response.context["page_obj"]), 5)
         self.assertTrue(response.context["is_paginated"])
         self.assertEqual(response.context["paginator"].num_pages, 2)
+
+    def test_task_list_breadcrumbs_assigned_correctly(self):
+        response = self.client.get(reverse("manager:task-list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["breadcrumbs"]), 1)
+        self.assertEqual(response.context["breadcrumbs"][0]["title"], "Tasks")
+        self.assertTrue(response.context["breadcrumbs"][0]["active"])
+
+    def test_task_create_breadcrumbs_assigned_correctly(self):
+        response = self.client.get(reverse("manager:task-create"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["breadcrumbs"]), 2)
+        self.assertEqual(response.context["breadcrumbs"][0]["title"], "Tasks")
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["url"],
+            reverse("manager:task-list")
+        )
+        self.assertEqual(response.context["breadcrumbs"][1]["title"], "Create")
+        self.assertTrue(response.context["breadcrumbs"][1]["active"])
+
+    def test_task_update_breadcrumbs_assigned_correctly(self):
+        response = self.client.get(
+            reverse("manager:task-update", kwargs={"pk": self.task.id})
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["breadcrumbs"]), 3)
+        self.assertEqual(response.context["breadcrumbs"][0]["title"], "Tasks")
+        self.assertEqual(
+            response.context["breadcrumbs"][0]["url"],
+            reverse("manager:task-list")
+        )
+        self.assertEqual(
+            response.context["breadcrumbs"][1]["title"],
+            "Details"
+        )
+        self.assertEqual(
+            response.context["breadcrumbs"][1]["url"],
+            reverse("manager:task-detail", kwargs={"pk": self.task.id})
+        )
+        self.assertEqual(response.context["breadcrumbs"][2]["title"], "Update")
+        self.assertTrue(response.context["breadcrumbs"][2]["active"])
