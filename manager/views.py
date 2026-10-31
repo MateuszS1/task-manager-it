@@ -43,7 +43,6 @@ class TaskTypeListView(LoginRequiredMixin, ListView):
     model = TaskType
     template_name = "manager/task_type_list.html"
     context_object_name = "task_type_list"
-    queryset = TaskType.objects.annotate(task_count=Count("tasks"))
     paginate_by = 5
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -72,17 +71,19 @@ class TaskTypeListView(LoginRequiredMixin, ListView):
         return context
 
     def get_queryset(self):
+        queryset = TaskType.objects.annotate(
+            task_count=Count("tasks")
+        ).order_by("name")
         form = TaskTypeSearchForm(self.request.GET)
         if form.is_valid():
-            return self.queryset.filter(
+            return queryset.filter(
                 name__icontains=form.cleaned_data["name"]
             )
-        return self.queryset
+        return queryset
 
 
 class PositionListView(LoginRequiredMixin, ListView):
     model = Position
-    queryset = Position.objects.annotate(worker_count=Count("workers"))
     paginate_by = 5
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -111,12 +112,15 @@ class PositionListView(LoginRequiredMixin, ListView):
         return context
 
     def get_queryset(self):
+        queryset = Position.objects.annotate(
+            worker_count=Count("workers")
+        ).order_by("name")
         form = PositionSearchForm(self.request.GET)
         if form.is_valid():
-            return self.queryset.filter(
+            return queryset.filter(
                 name__icontains=form.cleaned_data["name"]
             )
-        return self.queryset
+        return queryset
 
 
 class WorkerListView(LoginRequiredMixin, ListView):
