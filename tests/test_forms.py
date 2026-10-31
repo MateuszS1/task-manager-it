@@ -1,5 +1,6 @@
 import datetime
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from manager.forms import (
@@ -7,9 +8,9 @@ from manager.forms import (
     PositionSearchForm,
     WorkerSearchForm,
     TaskSearchForm,
-    TaskStatusUpdateForm
+    TaskStatusUpdateForm, TaskAssigneeUpdateForm
 )
-from manager.models import TaskType, Task
+from manager.models import TaskType, Task, Position
 
 
 class TaskStatusUpdateFormTests(TestCase):
@@ -54,6 +55,58 @@ class TaskStatusUpdateFormTests(TestCase):
 
         self.assertFalse(form.is_valid(), form.errors)
         self.assertIn("is_completed", form.errors)
+
+
+class TaskAssigneeUpdateFormTests(TestCase):
+    def setUp(self):
+        self.task_type = TaskType.objects.create(
+            name="test_task_name"
+        )
+        self.task = Task.objects.create(
+            name="test_task",
+            description="Task description",
+            deadline=datetime.date.today(),
+            priority=Task.Priority.LOW,
+            task_type=self.task_type,
+        )
+
+        self.position = Position.objects.create(name="test_position")
+
+        self.worker1 = get_user_model().objects.create(
+            username="test_worker1",
+            first_name="test1",
+            last_name="worker1",
+            password="q1a2z3w4",
+            position=self.position,
+        )
+        self.worker2 = get_user_model().objects.create(
+            username="test_worker2",
+            first_name="test2",
+            last_name="worker2",
+            password="q1a2z3w4",
+            position=self.position,
+        )
+
+    def test_form_saves_car_with_selected_drivers(self):
+        form = TaskAssigneeUpdateForm(
+            data={"assignees": [self.worker1.pk, self.worker2.pk], },
+            instance=self.task,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+
+        task = form.save()
+
+        self.assertCountEqual(
+            task.assignees.all(),
+            [self.worker1, self.worker2],
+        )
+
+    def test_missing_required_fields(self):
+        form = TaskAssigneeUpdateForm(data={})
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("assignees", form.errors)
 
 
 class PositionSearchFormTests(TestCase):
