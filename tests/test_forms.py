@@ -8,7 +8,12 @@ from manager.forms import (
     PositionSearchForm,
     WorkerSearchForm,
     TaskSearchForm,
-    TaskStatusUpdateForm, TaskAssigneeUpdateForm, TaskCreationForm, WorkerCreationForm
+    TaskStatusUpdateForm,
+    TaskAssigneeUpdateForm,
+    TaskCreationForm,
+    WorkerCreationForm,
+    WorkerUpdateForm,
+    UserUpdateForm
 )
 from manager.models import TaskType, Task, Position
 
@@ -48,6 +53,103 @@ class WorkerCreationFormTests(TestCase):
             "username",
             "password1",
             "password2",
+            "position",
+        }
+
+        self.assertEqual(
+            expected_errors,
+            set(form.errors.keys())
+        )
+
+
+class WorkerUpdateFormTests(TestCase):
+    def setUp(self):
+        self.position = Position.objects.create(
+            name="test_position"
+        )
+
+        self.worker = get_user_model().objects.create(
+            username="test_worker",
+            first_name="test",
+            last_name="worker",
+            password="q1a2z3w4",
+            position=self.position,
+        )
+
+    def test_form_updates_worker_with_selected_data(self):
+        form = WorkerUpdateForm(data={
+            "position": Position.objects.create(
+                name="new_test_position"
+            ),
+        },
+            instance=self.worker,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+
+        worker = form.save()
+
+        self.assertEqual(worker.position.name, "new_test_position")
+
+    def test_missing_required_fields(self):
+        form = WorkerUpdateForm(data={})
+
+        self.assertFalse(form.is_valid())
+
+        expected_errors = {
+            "position",
+        }
+
+        self.assertEqual(
+            expected_errors,
+            set(form.errors.keys())
+        )
+
+
+class UserUpdateFormTests(TestCase):
+    def setUp(self):
+        self.position = Position.objects.create(
+            name="test_position"
+        )
+
+        self.worker = get_user_model().objects.create(
+            username="test_worker",
+            first_name="test",
+            last_name="worker",
+            password="q1a2z3w4",
+            position=self.position,
+        )
+
+    def test_form_updates_user_with_selected_data(self):
+        form = UserUpdateForm(data={
+            "username": "new_test_worker",
+            "first_name": "new_test",
+            "last_name": "new_user",
+            "email": "new@test.com",
+            "position": Position.objects.create(
+                name="new_test_position"
+            ),
+        },
+            instance=self.worker,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+
+        worker = form.save()
+
+        self.assertEqual(worker.username, "new_test_worker")
+        self.assertEqual(worker.first_name, "new_test")
+        self.assertEqual(worker.last_name, "new_user")
+        self.assertEqual(worker.email, "new@test.com")
+        self.assertEqual(worker.position.name, "new_test_position")
+
+    def test_missing_required_fields(self):
+        form = UserUpdateForm(data={})
+
+        self.assertFalse(form.is_valid())
+
+        expected_errors = {
+            "username",
             "position",
         }
 
